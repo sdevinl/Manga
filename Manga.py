@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import re
+import webbrowser
 import requests
 from PIL import Image
 from io import BytesIO
@@ -31,34 +32,35 @@ soup = BeautifulSoup(response.content, 'html.parser')
 img_tags = soup.find_all('a')
 
 # show images
-#img = Image.open(BytesIO(response.content))
-#img.show()
+# img = Image.open(BytesIO(response.content))
+# img.show()
 
 series = soup.title.text.split('Manga')[0][:-1]
 chapters[series] = []
 links[series] = []
 
-
-
 # Links and Chapters
 for i in img_tags:
     chapters[series].append(i.contents)
     links[series].append(i['href'])
-print(links)
+print('links:',links)
 
 series_format = series.replace(' ', '-').lower()
-print(series_format)
+print('series:',series_format)
 
 filtered_links = filter(lambda x: series_format in x, links[series])
 filtered_links = list(filtered_links)
 
-temp_url = url + filtered_links[4]
-print('temp_url', temp_url)
+temp_url = url + filtered_links[4][1:]
+print(url,filtered_links[4][1:])
+print('temp_url:', temp_url)
 temp_response = requests.get(temp_url)
-temp_soup = BeautifulSoup(temp_url ,'html.parser')
+temp_soup = BeautifulSoup(temp_url, 'html.parser')
 temp_img_tag = soup.src
 
 print('src', temp_img_tag)
 
 #img = Image.open(BytesIO(temp_img_tag))
 #img.show()
+
+webbrowser.open_new_tab(temp_url)
